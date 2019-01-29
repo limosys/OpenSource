@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.limosys</groupId>
   <artifactId>jlimo-dbswing</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.1</version>
   
   	<repositories>
 		<repository>
@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>com.limosys.javalibs</groupId>
 			<artifactId>jlimo-dx</artifactId>
-			<version>1.0</version>
+			<version>1.1</version>
 		</dependency>
   	</dependencies>
   

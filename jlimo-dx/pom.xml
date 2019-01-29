@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.limosys</groupId>
   <artifactId>jlimo-dx</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.1</version>
   <description>replacement of JBuilder2006 dx.jar with added functionality</description>
   
 	<repositories>

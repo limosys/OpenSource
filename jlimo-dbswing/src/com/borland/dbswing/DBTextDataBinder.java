@@ -1876,7 +1876,9 @@ component. </p>
     boolean affectedOurRow = (affectedRow == columnAwareSupport.dataSet.getRow()) ||
       affectedRow == -1;
     if (affectedOurRow && !ignoreValueChange) {
-      updateText();
+			if (event.getStringChangedColumnName() == null
+					|| event.getStringChangedColumnName().equals(columnAwareSupport.getColumnName()))
+				updateText();
     }
   }
 

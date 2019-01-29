@@ -73,6 +73,14 @@ public class DataChangeEvent extends com.borland.jb.util.DispatchableEvent
     super(source);
     this.id         = id;
     this.affectedRow  = affectedRow;
+    this.changedColumnName  = null;
+  }
+
+  public DataChangeEvent(Object source, int id, long affectedRow, String changedColumnName) {
+    super(source);
+    this.id         = id;
+    this.affectedRow  = affectedRow;
+    this.changedColumnName = changedColumnName;
   }
 
   /**
@@ -97,6 +105,7 @@ public class DataChangeEvent extends com.borland.jb.util.DispatchableEvent
    */
   public final int getRowAffected() { return (int)affectedRow; }
   public final long getLongRowAffected() { return affectedRow; }
+  public final String getStringChangedColumnName() { return changedColumnName; }
 
   /**
    * @return   The type of data change. Return values for this property
@@ -112,4 +121,5 @@ public class DataChangeEvent extends com.borland.jb.util.DispatchableEvent
   }
   private int     id;
   private long    affectedRow;
+  private String  changedColumnName;
 }
