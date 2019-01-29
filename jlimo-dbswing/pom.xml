@@ -13,9 +13,9 @@
 	
   	<dependencies>
 		<dependency>
-			<groupId>com.limosys</groupId>
+			<groupId>com.limosys.javalibs</groupId>
 			<artifactId>jlimo-dx</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
 		</dependency>
   	</dependencies>
   
