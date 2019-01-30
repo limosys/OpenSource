@@ -986,7 +986,8 @@ abstract public class DataSet extends ReadWriteRow
         dataSetStore.calcUnpostedFields(this);
       }
 
-      dataChangeListenersDispatch(new DataChangeEvent(this, DataChangeEvent.ROW_CHANGED, currentRow));
+			dataChangeListenersDispatch(new DataChangeEvent(this, DataChangeEvent.ROW_CHANGED, currentRow,
+					refreshBindedComponentOnly ? value.column.getColumnName() : null));
     }
   }
 
@@ -1071,6 +1072,11 @@ abstract public class DataSet extends ReadWriteRow
     validateRow.validate();
   }
 
+
+	public void setRefreshBindedComponentOnly(boolean refreshBindedComponentOnly)
+	{
+		this.refreshBindedComponentOnly = refreshBindedComponentOnly;
+	}
 
   /*
    *  @deprecated use getStatus()
@@ -3754,6 +3760,8 @@ abstract public class DataSet extends ReadWriteRow
   private transient RowIterator              iterators;
 
   transient StorageDataSet resolverStorageDataSet;
+
+	transient boolean               				refreshBindedComponentOnly;
 
   private static final long serialVersionUID = 1L;
 }
