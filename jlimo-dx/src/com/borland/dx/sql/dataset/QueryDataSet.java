@@ -348,9 +348,7 @@ public class QueryDataSet extends StorageDataSet {
 	 * @param dataSet
 	 *          DataSet
 	 */
-	public void saveChanges(DataSet dataSet)
-	/*-throws DataSetException-*/
-	{
+	public void saveChanges(DataSet dataSet) /*-throws DataSetException-*/ {
 		Resolver resolver = getResolver();
 		if (resolver == null) {
 			Database database = getDatabase();
@@ -415,10 +413,10 @@ public class QueryDataSet extends StorageDataSet {
 	}
 
 	/**
-	 * LimoSys feature to replace bad database connection (e.g. after computer in sleep mode)
+	 * LimoSys feature to change database connection to support efficient object sharing functionality
 	 */
-	public void switchDatabase(Database db) {
-		if (queryDescriptor != null) queryDescriptor.switchDatabase(db);
+	public void switchConnection(Database db) {
+		if (queryDescriptor != null) queryDescriptor.switchConnection(db);
 	}
 
 	private QueryDescriptor queryDescriptor;

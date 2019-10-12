@@ -5,16 +5,22 @@
 
 package com.borland.dx.dataset;
 
-import com.borland.dx.memorystore.MemoryStore;
-import com.borland.jb.util.TriStateProperty;
-import com.borland.jb.util.Trace;
-import com.borland.jb.util.EventMulticaster;
-import com.borland.jb.util.ErrorResponse;
-import com.borland.jb.util.DiagnosticJLimo;
-import com.borland.dx.dataset.cons.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.EventListener;
+import java.util.Locale;
+import java.util.TooManyListenersException;
 
-import java.io.*;
-import java.util.*;
+import com.borland.dx.dataset.cons.DataConst;
+import com.borland.dx.dataset.cons.OpenBlock;
+import com.borland.dx.dataset.cons.PropSet;
+import com.borland.dx.memorystore.MemoryStore;
+import com.borland.dx.sql.dataset.Database;
+import com.borland.jb.util.DiagnosticJLimo;
+import com.borland.jb.util.ErrorResponse;
+import com.borland.jb.util.EventMulticaster;
+import com.borland.jb.util.Trace;
 
 //import java.beans.Beans;
 /**
@@ -1133,47 +1139,47 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 			if (operationCompleted) {
 				if (!dataNeedsRecalc)
 					synchronized (getDataMonitor()) {
-					setNeedsRecalc(false);
-					if (oldFks != null) {
-					for (int index = 0; index < oldFks.length; ++index) {
-					desc = oldFks[index];
-					StorageDataSet table = desc.openReferenceTableData(this, getStore());
-					ForeignKeyDescriptor invertedDesc = desc.invert(this);
-					// This will have already have been removed if the stream was dropped.
-					// Stream gets dropped during restructure if the actual structure
-					// of the table itself changes (ie column add/drop).
-					//
-					if (table.hasForeignKey(invertedDesc, table.foreignKeyReferenceDescs) != null)
-						table.removeForeignKeyReference(invertedDesc);
-					if (table != this)
-						table.closeData(AccessEvent.UNKNOWN, true);
-					}
-					try {
-					setForeignKeys(oldFks, 0, 0);
-					} catch (DataSetException ex) {
-					for (int index = 0; index < oldFks.length; ++index) {
-					try {
-					addForeignKey(oldFks[index]);
-					} catch (DataSetException ex2) {
-					DiagnosticJLimo.println("ex: " + ex2.getMessage());
-					}
-					}
-					}
-					}
-					if (oldReferenceFks != null) {
-					for (int index = 0; index < oldReferenceFks.length; ++index) {
-					try {
-					desc = oldReferenceFks[index];
-					StorageDataSet table = desc.openReferenceTableData(this, getStore());
-					table.removeForeignKey(desc.invert(this));
-					table.addForeignKey(desc.invert(this));
-					if (table != this)
-						table.closeData(AccessEvent.UNKNOWN, true);
-					} catch (DataSetException ex) {
-					DiagnosticJLimo.println("ex: " + ex.getMessage());
-					}
-					}
-					}
+						setNeedsRecalc(false);
+						if (oldFks != null) {
+							for (int index = 0; index < oldFks.length; ++index) {
+								desc = oldFks[index];
+								StorageDataSet table = desc.openReferenceTableData(this, getStore());
+								ForeignKeyDescriptor invertedDesc = desc.invert(this);
+								// This will have already have been removed if the stream was dropped.
+								// Stream gets dropped during restructure if the actual structure
+								// of the table itself changes (ie column add/drop).
+								//
+								if (table.hasForeignKey(invertedDesc, table.foreignKeyReferenceDescs) != null)
+									table.removeForeignKeyReference(invertedDesc);
+								if (table != this)
+									table.closeData(AccessEvent.UNKNOWN, true);
+							}
+							try {
+								setForeignKeys(oldFks, 0, 0);
+							} catch (DataSetException ex) {
+								for (int index = 0; index < oldFks.length; ++index) {
+									try {
+										addForeignKey(oldFks[index]);
+									} catch (DataSetException ex2) {
+										DiagnosticJLimo.println("ex: " + ex2.getMessage());
+									}
+								}
+							}
+						}
+						if (oldReferenceFks != null) {
+							for (int index = 0; index < oldReferenceFks.length; ++index) {
+								try {
+									desc = oldReferenceFks[index];
+									StorageDataSet table = desc.openReferenceTableData(this, getStore());
+									table.removeForeignKey(desc.invert(this));
+									table.addForeignKey(desc.invert(this));
+									if (table != this)
+										table.closeData(AccessEvent.UNKNOWN, true);
+								} catch (DataSetException ex) {
+									DiagnosticJLimo.println("ex: " + ex.getMessage());
+								}
+							}
+						}
 					}
 			} else
 				clearCalcFieldsState();
@@ -3902,48 +3908,47 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 	 *          The DataSet containing the updated data.
 	 */
 	public void saveChanges(DataSet dataSet) /*-throws DataSetException-*/ {
-		if (resolver == null)
-			DataSetException.cannotSaveChanges(this);
-
-		closeProvider(false);
-
-		if (isOpen())
-			resolver.resolveData(dataSet);
+		if (resolver == null) DataSetException.cannotSaveChanges(this);
+		synchronized (syncRefreshResolve) {
+			closeProvider(false);
+			if (isOpen()) resolver.resolveData(dataSet);
+		}
 	}
 
 	/**
 	 * Calls the Provider to refresh data from the data source of the StorageDataSet.
 	 */
 	public void refresh() /*-throws DataSetException-*/ {
-		if (provider == null)
-			DataSetException.cannotRefresh(this);
+		if (provider == null) DataSetException.cannotRefresh(this);
 
-		provider.close(this, false);
-		failIfProviderIsBusy();
+		synchronized (syncRefreshResolve) {
+			provider.close(this, false);
+			failIfProviderIsBusy();
 
-		if (isDetailDataSetWithFetchAsNeeded()) {
-			emptyAllRows();
-		} else if (!provider.isAccumulateResults()) {
-			close();
-			synchronized (getOpenMonitor(editBlocked)) {
-				synchronized (this) {
-					synchronized (dataMonitor) {
-						_empty();
+			if (isDetailDataSetWithFetchAsNeeded()) {
+				emptyAllRows();
+			} else if (!provider.isAccumulateResults()) {
+				close();
+				synchronized (getOpenMonitor(editBlocked)) {
+					synchronized (this) {
+						synchronized (dataMonitor) {
+							_empty();
+						}
 					}
 				}
 			}
+			// Causes problem for refresh on a detail with fetchAsNeeded, since
+			// This must have an openDataSet to perform a call to emptyAllRows().
+			//
+			// ! boolean wasOpen = close();
+			provider.provideData(this, false);
+			setProviderPropertyChanged(false);
+			// ! if (wasOpen)
+			open();
+			// Now internalRow and currentRow need to be synched. Also need to go to first row.
+			//
+			first();
 		}
-		// Causes problem for refresh on a detail with fetchAsNeeded, since
-		// This must have an openDataSet to perform a call to emptyAllRows().
-		//
-		// ! boolean wasOpen = close();
-		provider.provideData(this, false);
-		setProviderPropertyChanged(false);
-		// ! if (wasOpen)
-		open();
-		// Now internalRow and currentRow need to be synched. Also need to go to first row.
-		//
-		first();
 	}
 
 	final boolean isProviding() {
@@ -4713,11 +4718,13 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 		Column[] cols = columnList.getScopedColumns();
 		int columnCount = columnList.getScopedColumnLength();
 		for (int ordinal = 0; ordinal < columnCount; ++ordinal) {
-			if (cols[ordinal].isClusteredOrAutoIncrement()) { return new SortDescriptor(null,
-					new String[] { cols[ordinal].getColumnName() },
-					null,
-					null,
-					Sort.PRIMARY); }
+			if (cols[ordinal].isClusteredOrAutoIncrement()) {
+				return new SortDescriptor(null,
+						new String[] { cols[ordinal].getColumnName() },
+						null,
+						null,
+						Sort.PRIMARY);
+			}
 		}
 		return null;
 	}
@@ -4952,4 +4959,6 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 	// 3: added foreignKeyDescriptor[] property.
 	//
 	private static final long serialVersionUID = 3L;
+	private transient Object syncRefreshResolve = new Object();
+	
 }

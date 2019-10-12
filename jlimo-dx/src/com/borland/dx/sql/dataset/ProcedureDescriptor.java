@@ -67,5 +67,6 @@ public class ProcedureDescriptor extends QueryDescriptor
   }
 
   private static final long serialVersionUID = 1L;
+
 }
 

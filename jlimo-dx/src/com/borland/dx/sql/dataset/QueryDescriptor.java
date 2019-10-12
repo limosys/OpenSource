@@ -233,7 +233,7 @@ public class QueryDescriptor implements java.io.Serializable {
 	/**
 	 * LimoSys feature to replace bad database connection (e.g. after computer in sleep mode)
 	 */
-	public void switchDatabase(Database db) {
+	public void switchConnection(Database db) {
 		this.database = db;
 	}
 
