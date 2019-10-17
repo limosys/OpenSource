@@ -20,6 +20,9 @@ public class DxTestConnection {
 	}
 
 	private static String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static Integer timeout = 5;
+	private static boolean useIntegratedSecurity = false;
+	
 
 	public Database getNewDb(DxTestDb dxTestDb) {
 		return getNewDb(dxTestDb, false);
@@ -27,12 +30,12 @@ public class DxTestConnection {
 
 	public Database getNewDb(DxTestDb dxTestDb, boolean switchLsvpn) {
 		Database db = new Database();
-		String connStr = getConnectionStringLogin(dxTestDb.dbName, 15, false, switchLsvpn);
-		db.setConnection(new com.borland.dx.sql.dataset.ConnectionDescriptor(connStr, "sa", JLimoRegistryVals.PASSWORD.getVal(), false, driver));
+		String connURL = getConnectionURL(dxTestDb, switchLsvpn);
+		db.setConnection(new com.borland.dx.sql.dataset.ConnectionDescriptor(connURL, "sa", JLimoRegistryVals.PASSWORD.getVal(), false, driver));
 		return db;
 	}
 
-	private String getConnectionStringLogin(String dbName, Integer timeout, boolean useIntegratedSecurity, boolean switchLsvpn) {
+	public String getConnectionURL(DxTestDb dxTestDb, boolean switchLsvpn) {
 		String srvrStr = JLimoRegistryVals.SERVER.getVal().toLowerCase();
 		if (switchLsvpn) {
 			if (srvrStr.contains("lsvpn.net"))
@@ -44,7 +47,7 @@ public class DxTestConnection {
 				+ srvrStr
 				+ (srvrStr.indexOf("\\") >= 0 ? "" : ":" + JLimoRegistryVals.PORT.getVal())
 				+ ";databaseName="
-				+ dbName
+				+ dxTestDb.dbName
 				+ ";useServerPrepStmts=false"
 				+ (timeout != null && timeout > 0 && timeout < 60 ? ";loginTimeout=" + timeout + ";socketTimeout=" + timeout : "")
 				+ (useIntegratedSecurity ? ";integratedSecurity=true" : "");
