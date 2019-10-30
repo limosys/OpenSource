@@ -31,10 +31,5 @@
   		<artifactId>beandt</artifactId>
   		<version>1.0</version>
   	</dependency>
-  	<dependency>
-  		<groupId>com.limosys.javalibs</groupId>
-  		<artifactId>jds</artifactId>
-  		<version>1.0</version>
-  	</dependency>
   </dependencies>
 </project>
