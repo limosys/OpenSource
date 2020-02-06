@@ -20,7 +20,7 @@ public class DxTestConnection {
 	}
 
 	private static String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static Integer timeout = 5;
+	private static Integer timeout = 30;
 	private static boolean useIntegratedSecurity = false;
 	
 

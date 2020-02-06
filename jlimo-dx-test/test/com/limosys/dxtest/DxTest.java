@@ -2,6 +2,15 @@ package com.limosys.dxtest;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +18,7 @@ import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.sql.dataset.Database;
 import com.borland.dx.sql.dataset.QueryDataSet;
 import com.borland.dx.sql.dataset.QueryDescriptor;
+import com.borland.dx.sql.dataset.UtcTimestamp;
 import com.limosys.dxtest.DxTestConnection.DxTestDb;
 import com.limosys.dxtest.DxTestUtils.DxTestOption;
 
@@ -89,4 +99,71 @@ public class DxTest {
 		System.out.println();
 	}
 
+	@Test
+	public void utcTimeTest() {
+		// String[] ids = TimeZone.getAvailableIDs();
+		// for (String id : ids) {
+		// System.out.println(id + ": " + TimeZone.getTimeZone(id).getDisplayName());
+		// }
+		
+		// TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+		
+		QueryDataSet qds = new QueryDataSet();
+		try {
+			DxTestConnection dxConn = new DxTestConnection();
+			Database db = dxConn.getNewDb(DxTestDb.JLimo);
+			db.openConnection();
+			qds.setQuery(new QueryDescriptor(db, "SELECT JOB_ID, UTC_DISP_DTM, CUST_FIRST_NME FROM JOB WHERE JOB_ID=1616887"));
+			qds.open();
+			Timestamp tm = qds.getTimestamp("UTC_DISP_DTM");
+			Date dtm = new Date(tm.getTime());
+			System.out.println("dtmLcl: " + dtm);
+			System.out.println("dtmUtc: " + UtcTimestamp.formatAsUtc(tm));
+			System.out.println("name: " + qds.getString("CUST_FIRST_NME"));
+			qds.setString("CUST_FIRST_NME", "Andrew");
+			qds.post();
+			qds.saveChanges();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			qds.close();
+		}		
+		
+		// GregorianCalendar calUTC = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+		//
+		// String serverName = "ecl-db1.lsvpn.net";
+		// int portNumber = 1433;
+		// String databaseName = "JLimo";
+		// String username = "sa";
+		// String password = "jlimo";
+		//
+		// String connectionUrl = "jdbc:sqlserver://" + serverName + ":" + portNumber + ";" + "databaseName="
+		// + databaseName + ";username=" + username + ";password=" + password + ";";
+		//
+		// // Establish the connection.
+		// try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement()) {
+		//
+		// System.out.println();
+		// System.out.println("Connection established successfully.");
+		//
+		// // Create and execute an SQL statement that returns user name.
+		// // String SQL = "SELECT SUSER_SNAME()";
+		// String SQL = "SELECT JOB_ID, UTC_DISP_DTM FROM JOB WHERE JOB_ID=1616887";
+		// try (ResultSet rs = stmt.executeQuery(SQL)) {
+		//
+		// // Iterate through the data in the result set and display it.
+		// while (rs.next()) {
+		// Date dtmLcl = new Date(rs.getTimestamp(2).getTime());
+		// Date dtmUtc = new Date(rs.getTimestamp(2, calUTC).getTime());
+		// System.out.println("JOB_ID: " + rs.getString(1));
+		// System.out.println("dtmLcl: " + dtmLcl);
+		// System.out.println("dtmUtc: " + dtmUtc);
+		// }
+		// }
+		// } catch (Exception ex) {
+		// ex.printStackTrace();
+		// }
+		
+	}
+	
 }

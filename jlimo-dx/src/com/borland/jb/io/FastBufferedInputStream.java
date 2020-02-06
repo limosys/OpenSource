@@ -5,9 +5,11 @@
 
 package com.borland.jb.io;
 
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import com.borland.jb.util.DiagnosticJLimo;
-import sun.io.*;
-import java.io.*;
 
 /**
  * An unsynchronized buffered input stream that reads in characters

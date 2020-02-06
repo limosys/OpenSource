@@ -5,9 +5,11 @@
 
 package com.borland.jb.io;
 
-import java.io.*;
-import sun.io.*;
-import com.borland.jb.util.DiagnosticJLimo;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+
 import com.borland.jb.util.Hex;
 
 /**

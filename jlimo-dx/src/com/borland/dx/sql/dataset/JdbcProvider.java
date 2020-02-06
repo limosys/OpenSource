@@ -19,11 +19,10 @@ package com.borland.dx.sql.dataset;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 
 import com.borland.dx.dataset.Coercer;
 import com.borland.dx.dataset.Column;
@@ -32,7 +31,6 @@ import com.borland.dx.dataset.LoadCancel;
 import com.borland.dx.dataset.Provider;
 import com.borland.dx.dataset.ProviderHelp;
 import com.borland.dx.dataset.RowStatus;
-import com.borland.dx.dataset.RowVariant;
 import com.borland.dx.dataset.StorageDataSet;
 import com.borland.dx.dataset.Variant;
 import com.borland.jb.io.InputStreamToByteArray;
@@ -805,10 +803,13 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 
 	// -------------------------------- LimoSys Additions Start: ----------------------------------
 
+	private static GregorianCalendar calUtc = new GregorianCalendar(java.util.TimeZone.getTimeZone("UTC"));
+
 	private boolean loadUtcTime(Variant value, ResultSet result, int index) {
 		try {
 			if (!loadColumns[index-1].getColumnName().startsWith("UTC_")) return false;
-			Timestamp tm = UtcTimestamp.parseFromUtc(result.getString(index));
+			// Timestamp tm = UtcTimestamp.parseFromUtc(result.getString(index));
+			Timestamp tm = result.getTimestamp(index, calUtc);
 			if (tm != null) {
 				value.setTimestamp(tm);
 				return true;

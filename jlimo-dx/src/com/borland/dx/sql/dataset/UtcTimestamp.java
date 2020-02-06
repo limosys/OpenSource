@@ -26,7 +26,7 @@ public class UtcTimestamp {
 		int p = sUtcDtm.lastIndexOf(".");
 		if (p >= 0) {
 			int msCount = sUtcDtm.length() - p;
-			while (msCount<=3) {
+			while (msCount <= 3) {
 				sUtcDtm += "0";
 				msCount++;
 			}

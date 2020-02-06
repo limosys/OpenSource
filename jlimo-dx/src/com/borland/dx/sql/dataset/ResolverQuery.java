@@ -26,6 +26,9 @@ import com.borland.jb.util.FastStringBuffer;
 import java.io.*;
 import java.math.*;
 import java.sql.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import com.borland.dx.dataset.*;
 
@@ -289,7 +292,8 @@ class ResolverQuery {
 				// preparedStatement.setTimestamp(index, value.getTimestamp());
 				Timestamp dtm = value.getTimestamp();
 				if (column.getServerColumnName() != null && column.getServerColumnName().startsWith("UTC_")) {
-					preparedStatement.setString(index, UtcTimestamp.formatAsUtc(dtm));
+					// preparedStatement.setString(index, UtcTimestamp.formatAsUtc(dtm));
+					preparedStatement.setTimestamp(index, dtm, getCalUTC());
 				} else {
 					preparedStatement.setTimestamp(index, dtm);
 				}
@@ -397,13 +401,18 @@ class ResolverQuery {
 			int status = columnStatus[index];
 			if ((status & rowId) != 0)
 				if ((status & nullRowId) == 0) {
-				Column column = columns[index];
+					Column column = columns[index];
 
-				DiagnosticJLimo.check(column.isSearchable(), "column: " + column.getColumnName() + "shouldn't be bound in WHERE clause!");
+					DiagnosticJLimo.check(column.isSearchable(), "column: " + column.getColumnName() + "shouldn't be bound in WHERE clause!");
 
-				setParameter(parameterNumber++, column, values[column.getOrdinal()]);
+					setParameter(parameterNumber++, column, values[column.getOrdinal()]);
 				}
 		}
+	}
+
+	private Calendar getCalUTC() {
+		if (calUTC == null) calUTC = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+		return calUTC;
 	}
 
 	// Status indicators for query optimization (see below)
@@ -442,4 +451,6 @@ class ResolverQuery {
 	protected PreparedStatement preparedStatement;
 	boolean reuseSaveStatements;
 	boolean useClearParameters;
+	private Calendar calUTC;
+
 }

@@ -5,9 +5,9 @@
 
 package com.borland.jb.io;
 
-import com.borland.jb.util.DiagnosticJLimo;
-import sun.io.*;
-import java.io.*;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * An unsynchronized buffered output stream
