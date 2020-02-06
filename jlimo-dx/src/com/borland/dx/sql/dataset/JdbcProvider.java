@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import com.borland.dx.dataset.Coercer;
@@ -800,16 +801,20 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 	private transient StorageDataSet variantDataSet;
 	private static final long serialVersionUID = 1L;
 	private int loadStatus = RowStatus.LOADED;
+	private transient Calendar calUTC;
 
 	// -------------------------------- LimoSys Additions Start: ----------------------------------
 
-	private static GregorianCalendar calUtc = new GregorianCalendar(java.util.TimeZone.getTimeZone("UTC"));
+	private Calendar getCalUTC() {
+		if (calUTC == null) calUTC = new GregorianCalendar(java.util.TimeZone.getTimeZone("UTC"));
+		return calUTC;
+	}
 
 	private boolean loadUtcTime(Variant value, ResultSet result, int index) {
 		try {
-			if (!loadColumns[index-1].getColumnName().startsWith("UTC_")) return false;
+			if (!loadColumns[index - 1].getColumnName().startsWith("UTC_")) return false;
 			// Timestamp tm = UtcTimestamp.parseFromUtc(result.getString(index));
-			Timestamp tm = result.getTimestamp(index, calUtc);
+			Timestamp tm = result.getTimestamp(index, getCalUTC());
 			if (tm != null) {
 				value.setTimestamp(tm);
 				return true;

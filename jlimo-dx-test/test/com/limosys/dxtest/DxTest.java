@@ -120,9 +120,9 @@ public class DxTest {
 			System.out.println("dtmLcl: " + dtm);
 			System.out.println("dtmUtc: " + UtcTimestamp.formatAsUtc(tm));
 			System.out.println("name: " + qds.getString("CUST_FIRST_NME"));
-			qds.setString("CUST_FIRST_NME", "Andrew");
-			qds.post();
-			qds.saveChanges();
+			// qds.setString("CUST_FIRST_NME", "Andrew");
+			// qds.post();
+			// qds.saveChanges();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
