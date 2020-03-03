@@ -5,18 +5,12 @@
 
 package com.borland.dx.dataset;
 
-import java.util.*;
-
 /**
- * This class is an adapter class for the ColumnPaintListener,
- * which is used for Column paint events.
+ * This class is an adapter class for the ColumnPaintListener, which is used for Column paint events.
  */
-public class ColumnPaintAdapter implements ColumnPaintListener
-{
-  public void painting(DataSet dataSet, Column column, int row, Variant value, CustomPaintSite paintSite)
-  {
-  }
-  public void editing(DataSet dataSet, Column column, CustomPaintSite paintSite)
-  {
-  }
+public class ColumnPaintAdapter implements ColumnPaintListener {
+
+	public void painting(DataSet dataSet, Column column, int row, Variant value, CustomPaintSite paintSite) {}
+
+	public void editing(DataSet dataSet, Column column, CustomPaintSite paintSite) {}
 }

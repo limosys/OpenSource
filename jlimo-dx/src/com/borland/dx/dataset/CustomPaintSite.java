@@ -5,7 +5,12 @@
 
 package com.borland.dx.dataset;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Insets;
+
+import javax.swing.border.Border;
 
  /**
   * The ItemPaintSite interface is the one that is passed to the Column.CustomPaint
@@ -39,6 +44,12 @@ public interface CustomPaintSite
   public void setForeground(Color color);
 
   /**
+   * The border for the item being painted.
+   * @param border A javax.swing.border.Border object to be used instead of default border.
+   */
+  public void setBorder(Border border);
+  
+  /**
    * The font to use for the item being painted.
    * @param font A java.awt.Font object representing the font to use.
    */
@@ -71,6 +82,12 @@ public interface CustomPaintSite
    */
   public Color getForeground();
 
+  /**
+   * The border for the item being painted.
+   * @return A javax.swing.border.Border object to be used instead of default border.
+   */
+  public Border getBorder();
+  
   /**
    * Whether or not the ItemPainter should erase its background.
    * @return true if transparent, false if not.
