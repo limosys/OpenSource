@@ -23,12 +23,24 @@
 
 package com.borland.dbswing;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.PaintContext;
+import java.util.ArrayList;
 
-import com.borland.dx.dataset.*;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableCellRenderer;
+
+import com.borland.dx.dataset.ColumnPaintListener;
+import com.borland.dx.dataset.CustomPaintSite;
 
  /**
   * <p>An optimized implementation of the
@@ -66,8 +78,21 @@ public class TableFastStringRenderer extends Component implements TableCellRende
   private Color defaultBackground;
   private Insets defaultMargins;
   private Font defaultFont;
+  private Border borderOvrrd;
+  private ArrayList<ColorStripe> colorStripes;
 
-
+  private static class ColorStripe {
+    private Color color;
+    private int width;
+    private boolean isLeftAligned;
+    
+    public ColorStripe(Color color, int width, boolean isLeftAligned) {
+    	this.color = color;
+    	this.width = width;
+    	this.isLeftAligned = isLeftAligned;
+    }
+  }
+  
   /**
    * <p>Constructs a <code>TableFastStringRenderer</code> component with no parameters.</p>
    */
@@ -93,7 +118,9 @@ public class TableFastStringRenderer extends Component implements TableCellRende
 
     setDefaultFont(table.getFont());
 
-    if (hasFocus) {
+    colorStripes = null;
+    borderOvrrd = null;
+		if (hasFocus) {
       setBorder(UIManager.getBorder("Table.focusCellHighlightBorder")); 
       if (table.isCellEditable(row, column) && table instanceof JdbTable) {
         JdbTable jdbTable = (JdbTable) table;
@@ -182,6 +209,8 @@ public class TableFastStringRenderer extends Component implements TableCellRende
     setFont(defaultFont);
     convertAlignment(defaultAlignment);
     setItemMargins(defaultMargins);
+    borderOvrrd = null;
+    colorStripes = null;
   }
 
   /**
@@ -374,16 +403,60 @@ public class TableFastStringRenderer extends Component implements TableCellRende
 
     g.setColor(getBackground());
     g.fillRect(0, 0, width, height);
-
+    
+	  paintColorStripes(g, (borderOvrrd==null ? border : borderOvrrd));
+    
     if (value != null) {
       g.setColor(getForeground());
       g.drawString(value, xOffset, yOffset);
     }
 
-    border.paintBorder(this, g, 0, 0, width, height);
+		if (borderOvrrd != null)  
+			borderOvrrd.paintBorder(this, g, 0, 0, width, height);
+		else 
+			border.paintBorder(this, g, 0, 0, width, height);
 
     // revert back to old font and color settings
     g.setFont(oldFont);
     g.setColor(oldColor);
   }
+
+	private void paintColorStripes(Graphics g, Border border) {
+		if (colorStripes == null || colorStripes.size() == 0) return;
+    Insets insets = border.getBorderInsets(this);
+    Color oldColor = g.getColor();
+
+		int xLeft = 0;
+		int xRight = 0;
+		for (ColorStripe cs : colorStripes) {
+			g.setColor(cs.color);
+			if (cs.isLeftAligned) {
+			  g.fillRect(insets.left + xLeft, insets.top, cs.width, height - insets.top);
+			  xLeft += cs.width;
+			} else {
+			  g.fillRect(width - insets.left - xRight - cs.width, insets.top, cs.width, height - insets.top);
+				xRight += cs.width;
+			}
+		}
+    
+    g.setColor(oldColor);
+		
+	}
+
+	@Override
+	public void setBorderOvrrd(Border border) {
+		borderOvrrd = border;
+	}
+
+	@Override
+	public Border getBorderOvrrd() {
+		return borderOvrrd;
+	}
+
+	@Override
+	public void addColorStripe(Color color, int width, boolean isLeftAligned) {
+		if (colorStripes == null) colorStripes = new ArrayList<TableFastStringRenderer.ColorStripe>();
+		colorStripes.add(new ColorStripe(color, width, isLeftAligned));
+	}
+
 }

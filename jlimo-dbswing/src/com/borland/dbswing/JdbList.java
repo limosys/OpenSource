@@ -23,17 +23,48 @@
 
 package com.borland.dbswing;
 
-import java.awt.*;
-import java.beans.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.plaf.*;
-
-import com.borland.dx.dataset.*;
-import java.util.Vector;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Vector;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.UIResource;
+
+import com.borland.dx.dataset.AccessEvent;
+import com.borland.dx.dataset.AccessListener;
+import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.ColumnAware;
+import com.borland.dx.dataset.ColumnPaintListener;
+import com.borland.dx.dataset.CustomPaintSite;
+import com.borland.dx.dataset.DataChangeEvent;
+import com.borland.dx.dataset.DataChangeListener;
+import com.borland.dx.dataset.DataRow;
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.DataSetException;
+import com.borland.dx.dataset.DataSetView;
+import com.borland.dx.dataset.Locate;
+import com.borland.dx.dataset.NavigationEvent;
+import com.borland.dx.dataset.NavigationListener;
+import com.borland.dx.dataset.PickListDescriptor;
+import com.borland.dx.dataset.ReadRow;
+import com.borland.dx.dataset.Variant;
 
 /**
  * <p>A data-aware extension to the <code>JList</code>
@@ -798,6 +829,17 @@ public class JdbList extends JList
     public Component getSiteComponent() {
       return this;
     }
+
+		@Override
+		public void setBorderOvrrd(Border border) {}
+
+		@Override
+		public Border getBorderOvrrd() {
+			return null;
+		}
+
+		@Override
+		public void addColorStripe(Color color, int width, boolean isLeftAligned) {}
 
   }
 
