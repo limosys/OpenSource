@@ -109,6 +109,7 @@ import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.ColumnAware;
 import com.borland.dx.dataset.ColumnPaintListener;
 import com.borland.dx.dataset.CustomPaintSite;
+import com.borland.dx.dataset.CustomPaintSiteLabel;
 import com.borland.dx.dataset.DataChangeEvent;
 import com.borland.dx.dataset.DataChangeListener;
 import com.borland.dx.dataset.DataRow;
@@ -3065,6 +3066,10 @@ public class DBTextDataBinder
 
 		@Override
 		public void addColorStripe(Color color, int width, boolean isLeftAligned) {}
+
+		@Override
+		public void addLabel(CustomPaintSiteLabel paintSiteLabel) {}
+
 	}
 
 	/** JTextComponent to be bound to DataSet */

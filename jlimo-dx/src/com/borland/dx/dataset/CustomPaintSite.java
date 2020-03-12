@@ -133,5 +133,7 @@ public interface CustomPaintSite {
 	public Component getSiteComponent();
 
 	public void addColorStripe(Color color, int width, boolean isLeftAligned);
+	
+	public void addLabel(CustomPaintSiteLabel paintSiteLabel);
 
 }

@@ -50,6 +50,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.text.Document;
 
 import com.borland.dx.dataset.CustomPaintSite;
+import com.borland.dx.dataset.CustomPaintSiteLabel;
 import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.dataset.ValidationException;
 import com.borland.dx.dataset.Variant;
@@ -856,5 +857,8 @@ public class TableMaskCellEditor extends JTextField implements TableCellEditor, 
 
 	@Override
 	public void addColorStripe(Color color, int width, boolean isLeftAligned) {}
+
+	@Override
+	public void addLabel(CustomPaintSiteLabel paintSiteLabel) {}
 
 }
