@@ -267,6 +267,10 @@ public class ProcedureDataSet extends StorageDataSet {
 	public void switchConnection(Database db) {
 		if (currentProvider != null) currentProvider.switchConnection(db);
 		Resolver resolver = getResolver();
-		if (resolver != null && resolver instanceof ProcedureResolver) ((ProcedureResolver) resolver).setDatabase(db);
+		if (resolver != null && resolver instanceof ProcedureResolver) {
+			ProcedureResolver procResolver = (ProcedureResolver) resolver;
+			procResolver.setDatabase(db);
+			if (procResolver.getDeleteProcedure() != null) procResolver.getDeleteProcedure().switchConnection(db);
+		}
 	}
 }
