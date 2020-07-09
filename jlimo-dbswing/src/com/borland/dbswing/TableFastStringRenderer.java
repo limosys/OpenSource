@@ -425,19 +425,6 @@ public class TableFastStringRenderer extends Component implements TableCellRende
 
 		FontMetrics fm = g.getFontMetrics(getFont());
 
-		int xOffset;
-		switch (horizontalAlignment) {
-			default:
-			case SwingConstants.LEFT:
-				xOffset = margins.left;
-				break;
-			case SwingConstants.CENTER:
-				xOffset = (width - fm.stringWidth(value)) / 2;
-				break;
-			case SwingConstants.RIGHT:
-				xOffset = width - fm.stringWidth(value) - margins.right;
-		}
-
 		int yOffset;
 		switch (verticalAlignment) {
 			default:
@@ -456,13 +443,44 @@ public class TableFastStringRenderer extends Component implements TableCellRende
 		g.setColor(getBackground());
 		g.fillRect(0, 0, width, height);
 
-		int xClrTxtOffset = paintColorText(g, (borderOvrrd == null ? border : borderOvrrd));
-
 		paintColorStripes(g, (borderOvrrd == null ? border : borderOvrrd));
+		int xLblOffset = paintLabels(g, (borderOvrrd == null ? border : borderOvrrd));
 
 		if (value != null) {
-			g.setColor(getForeground());
-			g.drawString(value, xOffset + xClrTxtOffset, yOffset);
+			if (xLblOffset == 0) {
+				int xOffset;
+				switch (horizontalAlignment) {
+					default:
+					case SwingConstants.LEFT:
+						xOffset = margins.left;
+						break;
+					case SwingConstants.CENTER:
+						xOffset = (width - fm.stringWidth(value)) / 2;
+						break;
+					case SwingConstants.RIGHT:
+						xOffset = width - fm.stringWidth(value) - margins.right;
+						break;
+				}
+				g.setColor(getForeground());
+				g.drawString(value, xOffset, yOffset);
+			} else {
+				int xOffset;
+				switch (horizontalAlignment) {
+					default:
+					case SwingConstants.LEFT:
+						xOffset = margins.left;
+						break;
+					case SwingConstants.CENTER:
+						xOffset = (width - xLblOffset - fm.stringWidth(value)) / 2;
+						break;
+					case SwingConstants.RIGHT:
+						xOffset = width - xLblOffset - fm.stringWidth(value) - margins.right;
+						break;
+				}
+				Graphics g1 = g.create(xLblOffset, 0, width - xLblOffset, height);
+				g1.setColor(getForeground());
+				g1.drawString(value, xOffset, yOffset);
+			}
 		}
 
 		if (borderOvrrd != null)
@@ -495,8 +513,8 @@ public class TableFastStringRenderer extends Component implements TableCellRende
 
 		g.setColor(oldColor);
 	}
-
-	private int paintColorText(Graphics g, Border border) {
+	
+	private int paintLabels(Graphics g, Border border) {
 		if (arrLabel == null || arrLabel.size() == 0) return 0;
 		Insets insets = border.getBorderInsets(this);		
 		Font curFont = g.getFont();
@@ -551,7 +569,6 @@ public class TableFastStringRenderer extends Component implements TableCellRende
 						g.drawRoundRect(xOffset + insetLeft, insetTop, widthEffective, height - insetTop - insetBottom, 8, 8);
 					}
 				}
-				
 				g.setColor(lbl.getForeground() == null ? getForeground() : lbl.getForeground());
 				g.drawString(lbl.getText(), xOffset + insetLeft + lbl.getPaddingLeft() + 1, yOffset);
 				widthEffective += lbl.getMarginLeft() + lbl.getMarginRight();
