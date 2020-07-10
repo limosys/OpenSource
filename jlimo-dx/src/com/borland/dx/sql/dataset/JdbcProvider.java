@@ -811,10 +811,25 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 	}
 
 	private boolean loadUtcTime(Variant value, ResultSet result, int index) {
+		return JdbcProvider.loadUtcTime(value, result, index, loadColumns[index - 1].getColumnName(), getCalUTC());
+		// try {
+		// if (!loadColumns[index - 1].getColumnName().startsWith("UTC_")) return false;
+		// Timestamp tm = result.getTimestamp(index, getCalUTC());
+		// if (tm != null) {
+		// value.setTimestamp(tm);
+		// return true;
+		// }
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// return false;
+		// }
+		// return false;
+	}
+	
+	public static boolean loadUtcTime(Variant value, ResultSet result, int index, String colName, Calendar calUTC) {
 		try {
-			if (!loadColumns[index - 1].getColumnName().startsWith("UTC_")) return false;
-			// Timestamp tm = UtcTimestamp.parseFromUtc(result.getString(index));
-			Timestamp tm = result.getTimestamp(index, getCalUTC());
+			if (!colName.startsWith("UTC_")) return false;
+			Timestamp tm = result.getTimestamp(index, calUTC);
 			if (tm != null) {
 				value.setTimestamp(tm);
 				return true;
@@ -825,7 +840,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 		}
 		return false;
 	}
-
+	
 	// -------------------------------- LimoSys Additions End: ----------------------------------
 
 }
