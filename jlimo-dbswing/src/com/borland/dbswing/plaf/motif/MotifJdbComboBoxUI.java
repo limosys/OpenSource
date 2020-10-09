@@ -22,21 +22,53 @@
 //--------------------------------------------------------------------------------------------------
 package com.borland.dbswing.plaf.motif;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.plaf.*;
-import javax.swing.plaf.basic.*;
-import javax.swing.table.*;
-import com.sun.java.swing.plaf.motif.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-import com.borland.dbswing.*;
-import com.borland.dbswing.plaf.basic.*;
-import com.borland.dx.dataset.*;
+import javax.swing.AbstractAction;
+import javax.swing.ComboBoxEditor;
+import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.plaf.basic.BasicComboPopup;
+import javax.swing.plaf.basic.ComboPopup;
+import javax.swing.table.TableModel;
 
-public class MotifJdbComboBoxUI extends MotifComboBoxUI {
+import com.borland.dbswing.JdbComboBox;
+import com.borland.dbswing.JdbTable;
+import com.borland.dbswing.TableScrollPane;
+import com.borland.dbswing.plaf.basic.BasicJdbComboBoxEditor;
+import com.borland.dx.dataset.DataSet;
+import com.borland.dx.dataset.PickListDescriptor;
+
+public class MotifJdbComboBoxUI extends BasicComboBoxUI {
 
   public static ComponentUI createUI(JComponent c) {
     return new MotifJdbComboBoxUI();
@@ -71,7 +103,7 @@ public class MotifJdbComboBoxUI extends MotifComboBoxUI {
     return comboBox.getModel() instanceof JdbComboBox.DBComboBoxModel;
   }
 
-  public class MotifJdbComboPopup extends MotifComboBoxUI.MotifComboPopup {
+  public class MotifJdbComboPopup extends BasicComboPopup {
     protected JdbTable table;
     protected Timer autoScrollTimer;
     protected boolean hasEntered = false;

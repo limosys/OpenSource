@@ -22,18 +22,19 @@
 //--------------------------------------------------------------------------------------------------
 package com.borland.dbswing.plaf.motif;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import javax.swing.plaf.*;
-import javax.swing.plaf.basic.*;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 
-import com.sun.java.swing.plaf.motif.*;
+import javax.swing.BoundedRangeModel;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JScrollBar;
+import javax.swing.Timer;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 
-import com.borland.dbswing.*;
-import com.borland.dbswing.plaf.*;
+import com.borland.dbswing.TableScrollPane;
 
 /**
  * Motif-style UI delegate for TableScrollBar component with special
@@ -44,7 +45,7 @@ import com.borland.dbswing.plaf.*;
  * - gradually increases the scroll increment size (Fibonacci sequence)
  *   when the mouse is held down on the thumb track or scroll arrow
  */
-public class MotifJdbTableScrollBarUI extends MotifScrollBarUI {
+public class MotifJdbTableScrollBarUI extends BasicScrollBarUI {
 
   public static ComponentUI createUI(JComponent c)    {
     return new MotifJdbTableScrollBarUI();
