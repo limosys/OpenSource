@@ -5,7 +5,7 @@
 .DS_Store
 
 # Compiled class file
-*.class
+# *.class - disabled to include class files in jlimo-borland-add
 
 # Log file
 *.log

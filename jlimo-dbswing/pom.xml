@@ -1,44 +1,51 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.limosys.javalibs</groupId>
-  <artifactId>jlimo-dbswing</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>jlimo-dbswing</name>
-  <description>replacement of JBuilder2006 dbswing.jar with added functionality</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.limosys.javalibs</groupId>
+	<artifactId>jlimo-dbswing</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>jlimo-dbswing</name>
+	<description>replacement of JBuilder2006 dbswing.jar with added functionality</description>
 
-  <repositories>
-    <repository>
-      <id>limosys-repo</id>
-      <url>http://colodev1.lsvpn.net</url>
-    </repository>
-  </repositories>
+	<repositories>
+		<repository>
+			<id>limosys-repo</id>
+			<url>http://colodev1.lsvpn.net</url>
+		</repository>
+	</repositories>
 
-  <dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>com.limosys.javalibs</groupId>
+			<artifactId>beandt</artifactId>
+			<version>1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>com.limosys.javalibs</groupId>
 			<artifactId>jlimo-dx</artifactId>
-			<version>3.0.0</version>
-      <!-- <version>${project.version}</version> -->
-		</dependency> 
-  </dependencies>
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <resources>
-      <resource>
-        <directory>src</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <release>14</release>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+			<version>${project.version}</version>
+			<!-- <version>3.0.0</version> -->
+		</dependency>
+	</dependencies>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<release>14</release>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
