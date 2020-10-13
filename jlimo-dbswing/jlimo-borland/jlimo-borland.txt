@@ -1,4 +1,6 @@
 jlimo-borland.jar must combine compiled code of beandt.jar, jlimo-dx and jlimo-dbswing
 
 * to maintain license compliance must include source code for jlimo-dx and jlimo-dbswing
-* after the export from Eclipse jlimo-borland.jar must be modified by adding folder jlimo-borland-add containing beandt.jar classes and 'images' directory 
+* after the export from Eclipse jlimo-borland.jar must be modified by adding folder jlimo-borland-add containing
+  - beandt.jar classes and 'images' directory 
+  - jbcl.jar (com.borland.jbcl package and property files for com.borland.dbswing)
