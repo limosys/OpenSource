@@ -201,8 +201,12 @@ public class ProcedureProvider extends JdbcProvider {
 
 	/**
 	 * LimoSys feature to change database connection to support efficient object sharing functionality
+	 * @throws SQLException 
 	 */
-	public void switchConnection(Database db) {
-		if (procedureDescriptor != null) procedureDescriptor.switchConnection(db);
+	public void switchConnection(Database db) throws SQLException {
+		if (procedureDescriptor != null) {
+			procedureDescriptor.switchConnection(db);
+			resetState();
+		}
 	}
 }

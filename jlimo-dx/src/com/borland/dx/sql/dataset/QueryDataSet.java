@@ -417,6 +417,7 @@ public class QueryDataSet extends StorageDataSet {
 	 */
 	public void switchConnection(Database db) {
 		if (queryDescriptor != null) queryDescriptor.switchConnection(db);
+		if (currentProvider != null && currentProvider.getQuery() != null) currentProvider.getQuery().switchConnection(db);
 	}
 
 	private QueryDescriptor queryDescriptor;

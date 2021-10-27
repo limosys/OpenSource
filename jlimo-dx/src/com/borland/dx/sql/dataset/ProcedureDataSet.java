@@ -265,12 +265,16 @@ public class ProcedureDataSet extends StorageDataSet {
 	 * LimoSys feature to change database connection to support efficient object sharing functionality
 	 */
 	public void switchConnection(Database db) {
-		if (currentProvider != null) currentProvider.switchConnection(db);
-		Resolver resolver = getResolver();
-		if (resolver != null && resolver instanceof ProcedureResolver) {
-			ProcedureResolver procResolver = (ProcedureResolver) resolver;
-			procResolver.setDatabase(db);
-			if (procResolver.getDeleteProcedure() != null) procResolver.getDeleteProcedure().switchConnection(db);
+		try {
+			if (currentProvider != null) currentProvider.switchConnection(db);
+			Resolver resolver = getResolver();
+			if (resolver != null && resolver instanceof ProcedureResolver) {
+				ProcedureResolver procResolver = (ProcedureResolver) resolver;
+				procResolver.setDatabase(db);
+				if (procResolver.getDeleteProcedure() != null) procResolver.getDeleteProcedure().switchConnection(db);
+			}
+		} catch (SQLException ex) {
+			DataSetException.SQLException(ex);
 		}
 	}
 }

@@ -1079,7 +1079,14 @@ abstract public class DataSet extends ReadWriteRow
 		updateRow(-1, dataRow, updateColumns);
 	}
 
-	final void updateRow(long updateRow, DataRow dataRow, Column[] updateColumns)
+	/**
+	 * Made public by LimoSys to allow external updates of other rows beside current
+	 * 
+	 * @param updateRow
+	 * @param dataRow
+	 * @param updateColumns
+	 */
+	public final void updateRow(long updateRow, DataRow dataRow, Column[] updateColumns)
 	/*-throws DataSetException-*/
 	{
 		if (!open)
