@@ -2,15 +2,10 @@ package com.limosys.dxtest;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import org.junit.jupiter.api.Test;
 
@@ -163,6 +158,30 @@ public class DxTest {
 		// } catch (Exception ex) {
 		// ex.printStackTrace();
 		// }
+		
+	}
+
+	@Test
+	public void lastRefreshDtmMillisTest() {
+		DateFormat dtFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+		QueryDataSet qds = new QueryDataSet();
+		try {
+			DxTestConnection dxConn = new DxTestConnection();
+			Database db = dxConn.getNewDb(DxTestDb.JLimo);
+			db.openConnection();
+			qds.setQuery(new QueryDescriptor(db, "SELECT TOP 10 * FROM JOB"));
+			qds.open();
+			System.out.println("refresh #1: " + dtFormat.format(new Date(qds.getLastRefreshDtmMillis())));
+			for (int i = 0; i < 5; i++) {
+				Thread.sleep(750);
+				qds.refresh();
+				System.out.println("refresh #" + Integer.toString(i+2) + ": " + dtFormat.format(new Date(qds.getLastRefreshDtmMillis())));				
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			qds.close();
+		}		
 		
 	}
 	

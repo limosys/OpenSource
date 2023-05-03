@@ -1994,6 +1994,7 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 			this.loadValidate = loadValidate;
 			this.loadUncached = loadUncached;
 			this.lastLoadedRow = -1;
+			this.lastRefreshDtmMillis = null;
 			loading = true;
 			this.loadAsync = loadAsync;
 			loadedRows = 0;
@@ -2027,6 +2028,7 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 	{
 		synchronized (dataMonitor) {
 			if (loading) {
+				lastRefreshDtmMillis = System.currentTimeMillis();
 				loading = false;
 				loadValidate = false;
 				// loadUncached= false;
@@ -4874,6 +4876,10 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 		}
 		// commitPropertyRestructure(oldEditBlocked);
 	}
+	
+	public Long getLastRefreshDtmMillis() {
+		return lastRefreshDtmMillis;
+	}
 
 	ForeignKeyDescriptor[] foreignKeyDescs;
 	ForeignKeyDescriptor[] foreignKeyReferenceDescs;
@@ -4909,6 +4915,7 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 	private transient int loadStatus;
 	private transient boolean loadAsync;
 	private transient boolean loadValidate;
+	private transient Long lastRefreshDtmMillis;
 
 	private transient boolean dataFileChanged;
 	private DataFile dataFile;
