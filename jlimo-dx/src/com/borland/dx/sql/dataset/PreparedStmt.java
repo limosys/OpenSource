@@ -27,6 +27,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.ColumnDbMapping;
 import com.borland.dx.dataset.DataSet;
 import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.dataset.MasterLinkDescriptor;
@@ -330,6 +331,7 @@ class PreparedStmt {
 				sqlType = RuntimeMetaData.variantTypeToSqlType(column.getDataType());
 			statement.setNull(param, sqlType);
 		} else {
+			if (ColumnDbMapping.setParameter(statement, data, column, param)) return;
 			switch (data.getType()) {
 				case Variant.STRING:
 					DiagnosticJLimo.trace(Trace.QueryProgress, "Setting param: " + param + "  Value: " + data.getString());

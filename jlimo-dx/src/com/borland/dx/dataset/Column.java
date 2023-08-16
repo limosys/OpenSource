@@ -2350,6 +2350,24 @@ public class Column implements Cloneable, java.io.Serializable, Designable {
 	//
 	// int position;
 
+	public Integer getDbMapping() {
+		return dbMapping;
+	}
+	
+	public void setDbMapping(Integer dbMapping) {
+	  setDbMapping(dbMapping, null);	
+	}
+
+	public void setDbMapping(Integer dbMapping, ColumnDbMappingParamListener dbMappingListener) {
+		this.dbMapping = dbMapping;
+		this.dbMappingListener = dbMappingListener;
+		ColumnDbMapping.setMappingDetails(this, dbMapping);
+	}
+	
+	public ColumnDbMappingParamListener getDbMappingListener() {
+		return dbMappingListener;
+	}
+
 	transient int ordinal;
 	int preferredOrdinal;
 	int dataType;
@@ -2411,10 +2429,11 @@ public class Column implements Cloneable, java.io.Serializable, Designable {
 	private transient RuleBasedCollator collator;
 	transient Lookup lookup;
 	transient boolean hasValidations;
+	private Integer dbMapping;
+	private transient ColumnDbMappingParamListener dbMappingListener;
 
-	// 2 because has field was added.
-	//
-	private static final long serialVersionUID = 2L;
+	// 3 because dbMapping field was added.
+	private static final long serialVersionUID = 3L;
 	int hash;
 
 	private int predicates;

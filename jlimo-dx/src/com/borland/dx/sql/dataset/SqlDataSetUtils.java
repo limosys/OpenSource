@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.ColumnDbMapping;
 import com.borland.dx.dataset.LoadCancel;
 import com.borland.dx.dataset.MetaDataUpdate;
 import com.borland.dx.dataset.RowStatus;
@@ -67,7 +68,8 @@ public class SqlDataSetUtils {
 		for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
 			Column col = dataSet.hasColumn(rsMetaData.getColumnName(i));
 			if (col == null) continue;
-			Variant v = variants[col.getOrdinal()];
+			Variant v = variants[col.getOrdinal()];			
+			if (ColumnDbMapping.load(v, rs, i, col)) continue;
 			switch (v.getSetType()) {
 				case Variant.STRING:
 					tmpString = rs.getString(i);

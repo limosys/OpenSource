@@ -163,6 +163,7 @@ class ResolverQuery {
 
 		index++;
 
+		if (ColumnDbMapping.setParameter(preparedStatement, value, column, index)) return;
 		switch (value.getType()) {
 			case Variant.STRING:
 				int sqlType1 = column.getSqlType();

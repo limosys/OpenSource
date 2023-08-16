@@ -19,6 +19,7 @@ package com.borland.dx.sql.dataset;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -27,6 +28,7 @@ import java.util.GregorianCalendar;
 
 import com.borland.dx.dataset.Coercer;
 import com.borland.dx.dataset.Column;
+import com.borland.dx.dataset.ColumnDbMapping;
 import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.dataset.LoadCancel;
 import com.borland.dx.dataset.Provider;
@@ -498,6 +500,8 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 					ordinal = columnMap[index - 1];
 					value = variants[ordinal];
 					// !System.err.println(" ordinal is " + ordinal + ", index is " + index + ", type is " + variants[ordinal].getSetType());
+					if (ColumnDbMapping.load(value, result, index, loadColumns[ordinal])) continue;
+					
 					switch (value.getSetType()) {
 						case Variant.STRING:
 							tempString = result.getString(index);
@@ -840,7 +844,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 		}
 		return false;
 	}
-	
+			
 	// -------------------------------- LimoSys Additions End: ----------------------------------
 
 }
