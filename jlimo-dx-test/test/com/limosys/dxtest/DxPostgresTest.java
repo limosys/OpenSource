@@ -22,7 +22,10 @@ public class DxPostgresTest {
 	@Test
 	public void pgTestQueryDataSet() {
 		try {
-			double d = Double.parseDouble("1,234.50");
+			String s = "1,234.50";
+			String s1 = s.trim().replace(",", "");
+			double d = Double.parseDouble(s1);
+			System.out.println("[" + s + "] -> [" + d + "]");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return;
@@ -35,19 +38,19 @@ public class DxPostgresTest {
 			// while (rs.next()) {
 			// System.out.println(rs.getString("TYPE_NAME") + "\t" + JDBCType.valueOf(rs.getInt("DATA_TYPE")).getName());
 			// }
-
+			
 			QueryDataSet qds = new QueryDataSet();
-			// Column colMoney = new Column();
-			// colMoney.setColumnName("KT_MONEY");
-			// colMoney.setServerColumnName("KT_MONEY");
-			// colMoney.setTableName("kor_test");
-			// colMoney.setDbMapping(ColumnDbMapping.PG_MONEY, new ColumnDbMappingParamListener() {
-			// @Override
-			// public Object getStatementParamValue(Variant data) {
-			// return new PGmoney(data.getAsDouble());
-			// }
-			// });
-			// qds.addColumn(colMoney);
+			Column colMoney = new Column();
+			colMoney.setColumnName("KT_MONEY");
+			colMoney.setServerColumnName("KT_MONEY");
+			colMoney.setTableName("kor_test");
+			colMoney.setDbMapping(ColumnDbMapping.PG_MONEY, new ColumnDbMappingParamListener() {
+				@Override
+				public Object getStatementParamValue(Variant data) {
+					return new PGmoney(data.getAsDouble());
+				}
+			});
+			qds.addColumn(colMoney);
 
 			qds.setQuery(new QueryDescriptor(db, "select * from kor_test"));
 			qds.open();
