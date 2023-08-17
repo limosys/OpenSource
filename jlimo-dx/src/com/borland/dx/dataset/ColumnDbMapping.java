@@ -1,5 +1,7 @@
 package com.borland.dx.dataset;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,10 +15,10 @@ public class ColumnDbMapping {
 		if (col.getDbMapping() == null) return false;
 		switch (col.getDbMapping().intValue()) {
 			case PG_MONEY:
-				Object tempObj = result.getObject(index);
+				// Object tempObj = result.getObject(index);
+				Double tempDouble = (Double) result.getObject(index);
 				if (!result.wasNull())
-					//value.setBigDecimal(new BigDecimal(tempDouble, MathContext.DECIMAL32));
-					value.setAssignedNull();
+					value.setBigDecimal(new BigDecimal(tempDouble, MathContext.DECIMAL32));
 				else
 					value.setAssignedNull();
 				return true;
