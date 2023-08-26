@@ -291,7 +291,7 @@ class ResolverQuery {
 			case Variant.TIMESTAMP:
 				// preparedStatement.setTimestamp(index, value.getTimestamp());
 				Timestamp dtm = value.getTimestamp();
-				if (column.getServerColumnName() != null && column.getServerColumnName().startsWith("UTC_")) {
+				if (JdbcProvider.colNameStartsWithUTC(column.getServerColumnName())) {
 					// preparedStatement.setString(index, UtcTimestamp.formatAsUtc(dtm));
 					preparedStatement.setTimestamp(index, dtm, getCalUTC());
 				} else {

@@ -828,7 +828,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 	
 	public static boolean loadUtcTime(Variant value, ResultSet result, int index, String colName, Calendar calUTC) {
 		try {
-			if (!colName.startsWith("UTC_")) return false;
+			if (!JdbcProvider.colNameStartsWithUTC(colName)) return false;
 			Timestamp tm = result.getTimestamp(index, calUTC);
 			if (tm != null) {
 				value.setTimestamp(tm);
@@ -839,6 +839,12 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			return false;
 		}
 		return false;
+	}
+	
+	public static boolean colNameStartsWithUTC(String colName) {
+		return colName != null
+				&& colName.length() >= 4
+				&& colName.substring(0, 4).toUpperCase().equals("UTC_");
 	}
 	
 	// -------------------------------- LimoSys Additions End: ----------------------------------

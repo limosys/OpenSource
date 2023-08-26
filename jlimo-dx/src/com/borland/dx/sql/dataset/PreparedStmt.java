@@ -400,7 +400,7 @@ class PreparedStmt {
 				case Variant.TIMESTAMP:
 					// statement.setTimestamp(param, data.getTimestamp());
 					Timestamp dtm = data.getTimestamp();
-					if (column.getServerColumnName() != null && column.getServerColumnName().startsWith("UTC_")) {
+					if (JdbcProvider.colNameStartsWithUTC(column.getServerColumnName())) {
 						// statement.setString(param, UtcTimestamp.formatAsUtc(dtm));
 						statement.setTimestamp(param, dtm, getCalUTC());
 					} else {
