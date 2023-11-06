@@ -1,28 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.limosys.javalibs</groupId>
-  <artifactId>jlimo-dx</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <description>replacement of JBuilder2006 dx.jar with added functionality</description>
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.limosys.javalibs</groupId>
+	<artifactId>jlimo-dx</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<description>replacement of JBuilder2006 dx.jar with added functionality</description>
+
 	<repositories>
 		<repository>
 			<id>limosys-repo</id>
 			<url>http://colodev1.lsvpn.net</url>
 		</repository>
 	</repositories>
-  
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<release>16</release>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -33,11 +27,49 @@
 			</plugin>
 		</plugins>
 	</build>
-  <dependencies>
-  	<dependency>
-  		<groupId>com.limosys.javalibs</groupId>
-  		<artifactId>beandt</artifactId>
-  		<version>1.0</version>
-  	</dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>com.limosys.javalibs</groupId>
+			<artifactId>beandt</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<!-- use Ctrl-Alt-P in Eclipse to select active profile -->
+		<!-- The configuration build with different Java version profile -->
+		<profile>
+			<id>jdk16</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.8.1</version>
+						<configuration>
+							<release>16</release>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>jdk11</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.8.1</version>
+						<configuration>
+							<release>11</release>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
