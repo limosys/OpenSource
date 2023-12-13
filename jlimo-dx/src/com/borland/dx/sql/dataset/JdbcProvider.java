@@ -611,7 +611,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 
 						case Variant.TIMESTAMP:
 							// LimoSys update
-							if (loadUtcTime(value, result, index)) break;
+							if (loadUtcTime(value, result, index, loadColumns[ordinal])) break;
 
 							tempTimestamp = result.getTimestamp(index);
 							if (tempTimestamp != null) { // !result.wasNull()) {
@@ -803,32 +803,20 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 	private int loadStatus = RowStatus.LOADED;
 	private transient Calendar calUTC;
 
-	// -------------------------------- LimoSys Additions Start: ----------------------------------
+	// -------------------------------- LimoSys Additions Start ----------------------------------
 
 	private Calendar getCalUTC() {
 		if (calUTC == null) calUTC = new GregorianCalendar(java.util.TimeZone.getTimeZone("UTC"));
 		return calUTC;
 	}
 
-	private boolean loadUtcTime(Variant value, ResultSet result, int index) {
-		return JdbcProvider.loadUtcTime(value, result, index, loadColumns[index - 1].getColumnName(), getCalUTC());
-		// try {
-		// if (!loadColumns[index - 1].getColumnName().startsWith("UTC_")) return false;
-		// Timestamp tm = result.getTimestamp(index, getCalUTC());
-		// if (tm != null) {
-		// value.setTimestamp(tm);
-		// return true;
-		// }
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// return false;
-		// }
-		// return false;
+	private boolean loadUtcTime(Variant value, ResultSet result, int index, Column col) {
+		return JdbcProvider.loadUtcTime(value, result, index, col.getColumnName(), getCalUTC());
 	}
 	
 	public static boolean loadUtcTime(Variant value, ResultSet result, int index, String colName, Calendar calUTC) {
 		try {
-			if (!JdbcProvider.colNameStartsWithUTC(colName)) return false;
+			if (!colNameStartsWithUTC(colName)) return false;
 			Timestamp tm = result.getTimestamp(index, calUTC);
 			if (tm != null) {
 				value.setTimestamp(tm);
