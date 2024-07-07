@@ -126,7 +126,7 @@ public class ProcedureDataSet extends StorageDataSet {
 		// !propertiesChanged = true;
 		ProviderHelp.setProviderPropertyChanged(this, true);
 		if (currentProvider == null)
-			setProcedureProvider(new ProcedureProvider());
+			setProcedureProvider(ProviderFactory.createProcedureProvider());
 		currentProvider.setProcedure(procedureDescriptor);
 	}
 

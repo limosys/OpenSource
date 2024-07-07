@@ -4881,6 +4881,14 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 		return lastRefreshDtmMillis;
 	}
 
+	public Object getCacheConfig() {
+		return cacheConfig;
+	}
+
+	public void setCacheConfig(Object cacheConfig) {
+		this.cacheConfig = cacheConfig;
+	}
+
 	ForeignKeyDescriptor[] foreignKeyDescs;
 	ForeignKeyDescriptor[] foreignKeyReferenceDescs;
 
@@ -4916,6 +4924,7 @@ public class StorageDataSet extends DataSet implements ColumnDesigner {
 	private transient boolean loadAsync;
 	private transient boolean loadValidate;
 	private transient Long lastRefreshDtmMillis;
+	private transient Object cacheConfig;
 
 	private transient boolean dataFileChanged;
 	private DataFile dataFile;
