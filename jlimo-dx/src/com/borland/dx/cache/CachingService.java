@@ -1,9 +1,9 @@
 package com.borland.dx.cache;
 
-import com.borland.dx.sql.dataset.ProcedureProvider;
+import com.borland.dx.dataset.Provider;
 
 public interface CachingService {
 
-	public ProcedureProvider createProcedureProvider();
+	public CachingProvider createCachingProvider(Provider provider);
 
 }

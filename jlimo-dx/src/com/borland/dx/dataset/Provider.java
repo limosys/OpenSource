@@ -5,6 +5,8 @@
 
 package com.borland.dx.dataset;
 
+import com.borland.dx.cache.CachingProvider;
+
 /**
  * The Provider class is an abstract base class that "provides" (or populates)
  * a DataSet with data. Extend this class if you want to create a custom provider.
@@ -155,4 +157,15 @@ public abstract class Provider implements java.io.Serializable, Designable {
   private ReadWriteRow parameterRow;
 
   private static final long serialVersionUID = 1L;
+  
+	private transient CachingProvider cachingProvider;
+
+	public CachingProvider getCachingProvider() {
+		return cachingProvider;
+	}
+
+	public void setCachingProvider(CachingProvider cachingProvider) {
+		this.cachingProvider = cachingProvider;
+	}
+
 }
