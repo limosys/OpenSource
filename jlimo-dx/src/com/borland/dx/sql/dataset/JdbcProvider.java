@@ -25,6 +25,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import com.borland.dx.cache.Caching;
+import com.borland.dx.cache.CachingProvider;
+import com.borland.dx.cache.CachingService;
 import com.borland.dx.dataset.Coercer;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSetException;
@@ -54,7 +57,25 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 
 	abstract void providerFailed(Exception ex) /*-throws DataSetException-*/;
 
+	private boolean provideCachedData(StorageDataSet dataSet, boolean toOpen) {
+		CachingProvider cachingProvider = getCachingProvider();
+		if (cachingProvider == null) {
+			CachingService service = Caching.service();
+			if (service != null) {
+				cachingProvider = service.createCachingProvider(this);
+				setCachingProvider(cachingProvider);
+			}
+		}
+		if (cachingProvider != null) { return cachingProvider.provideData(dataSet, toOpen, this); }
+		return false;
+	}
+
 	public void provideData(StorageDataSet dataSet, boolean toOpen) /*-throws DataSetException-*/ {
+
+		if (provideCachedData(dataSet, toOpen)) {
+			return;
+		}
+
 		cacheDataSet(dataSet);
 		if (toOpen && !descriptor.isExecuteOnOpen())
 			return;
