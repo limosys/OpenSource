@@ -7,4 +7,6 @@ public interface CachingProvider {
 
 	public boolean provideData(StorageDataSet dataSet, boolean toOpen, Provider delegate);
 
+	public void clearCache(Provider delegate);
+
 }
