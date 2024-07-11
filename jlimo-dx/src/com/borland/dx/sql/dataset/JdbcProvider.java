@@ -28,6 +28,7 @@ import java.util.GregorianCalendar;
 import com.borland.dx.cache.Caching;
 import com.borland.dx.cache.CachingProvider;
 import com.borland.dx.cache.CachingService;
+import com.borland.dx.cache.DataLoad;
 import com.borland.dx.dataset.Coercer;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSetException;
@@ -57,7 +58,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 
 	abstract void providerFailed(Exception ex) /*-throws DataSetException-*/;
 
-	private boolean provideCachedData(StorageDataSet dataSet, boolean toOpen) {
+	private DataLoad provideCachedData(StorageDataSet dataSet, boolean toOpen) {
 		CachingProvider cachingProvider = getCachingProvider();
 		if (cachingProvider == null) {
 			CachingService service = Caching.service();
@@ -67,18 +68,20 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			}
 		}
 		if (cachingProvider != null) { return cachingProvider.provideData(dataSet, toOpen, this); }
-		return false;
+		return DataLoad.LOAD;
 	}
 
 	public void provideData(StorageDataSet dataSet, boolean toOpen) /*-throws DataSetException-*/ {
 
-		if (provideCachedData(dataSet, toOpen)) {
-			return;
-		}
-
 		cacheDataSet(dataSet);
 		if (toOpen && !descriptor.isExecuteOnOpen())
 			return;
+
+		DataLoad dataLoad = provideCachedData(dataSet, toOpen);
+		if (dataLoad == DataLoad.LOAD_STOP) {
+			return;
+		}
+		
 		ifBusy();
 		blockConnectionChanges(true);
 
@@ -115,6 +118,11 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			// ! Diagnostic.printStackTrace(ex);
 			providerFailed(ex);
 		}
+		
+		if (dataLoad == DataLoad.LOAD_AND_CALLBACK) {
+			getCachingProvider().dataLoaded(dataSet, this);
+		}
+
 	}
 
 	public boolean hasMoreData(StorageDataSet sds) {

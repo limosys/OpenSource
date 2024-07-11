@@ -168,4 +168,9 @@ public abstract class Provider implements java.io.Serializable, Designable {
 		this.cachingProvider = cachingProvider;
 	}
 
+	public void clearCache() {
+		if (cachingProvider != null) {
+			cachingProvider.clearCache(this);
+		}
+	}
 }

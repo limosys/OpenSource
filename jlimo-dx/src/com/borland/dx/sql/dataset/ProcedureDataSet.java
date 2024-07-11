@@ -223,8 +223,13 @@ public class ProcedureDataSet extends StorageDataSet {
 		} else {
 			super.saveChanges(dataSet);
 		}
+		Provider provider = getProvider();
+		if (provider != null) {
+			provider.clearCache();
+		}
 	}
 
+	
 	// Trick the property inspectors into believe their is no autoProvider
 	//
 	public void setProvider(Provider provider) /*-throws DataSetException-*/ {
