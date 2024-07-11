@@ -67,7 +67,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 				setCachingProvider(cachingProvider);
 			}
 		}
-		if (cachingProvider != null) { return cachingProvider.provideData(dataSet, toOpen, this); }
+		if (cachingProvider != null) { return cachingProvider.provideData(dataSet, toOpen); }
 		return DataLoad.LOAD;
 	}
 
@@ -120,7 +120,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 		}
 		
 		if (dataLoad == DataLoad.LOAD_AND_CALLBACK) {
-			getCachingProvider().dataLoaded(dataSet, this);
+			getCachingProvider().dataLoaded(dataSet);
 		}
 
 	}
