@@ -25,6 +25,10 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import com.borland.dx.cache.Caching;
+import com.borland.dx.cache.CachingProvider;
+import com.borland.dx.cache.CachingService;
+import com.borland.dx.cache.DataLoad;
 import com.borland.dx.dataset.Coercer;
 import com.borland.dx.dataset.Column;
 import com.borland.dx.dataset.DataSetException;
@@ -54,12 +58,34 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 
 	abstract void providerFailed(Exception ex) /*-throws DataSetException-*/;
 
+	private DataLoad provideCachedData(StorageDataSet dataSet, boolean toOpen) {
+		CachingProvider cachingProvider = getCachingProvider();
+		if (cachingProvider == null) {
+			CachingService service = Caching.service();
+			if (service != null) {
+				cachingProvider = service.createCachingProvider(this);
+				setCachingProvider(cachingProvider);
+			}
+		}
+		if (cachingProvider != null) { return cachingProvider.provideData(dataSet, toOpen); }
+		return DataLoad.LOAD;
+	}
+
 	public void provideData(StorageDataSet dataSet, boolean toOpen) /*-throws DataSetException-*/ {
+
 		cacheDataSet(dataSet);
 		if (toOpen && !descriptor.isExecuteOnOpen())
 			return;
+
+		DataLoad dataLoad = provideCachedData(dataSet, toOpen);
+		if (dataLoad == DataLoad.LOAD_STOP) {
+			return;
+		}
+		
 		ifBusy();
 		blockConnectionChanges(true);
+
+		StorageDataSet sdsCache = null;
 
 		try {
 			if (isPropertyChanged())
@@ -81,8 +107,13 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			if (maxLoadRows == 0)
 				closePrivateResources(true);
 			else {
-				if (!isAsyncLoad)
-					copyData(true);
+				if (!isAsyncLoad) {
+					if (dataLoad == DataLoad.LOAD_AND_CALLBACK) {
+						sdsCache = new StorageDataSet();
+						sdsCache.setColumns(dataSet.cloneColumns());
+					}
+					copyData(true, sdsCache);
+				}
 				else {
 					task = new TaskRunner(this);
 					task.start();
@@ -94,6 +125,11 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			// ! Diagnostic.printStackTrace(ex);
 			providerFailed(ex);
 		}
+		
+		if (sdsCache != null) {
+			getCachingProvider().dataLoaded(this, sdsCache);
+		}
+
 	}
 
 	public boolean hasMoreData(StorageDataSet sds) {
@@ -389,9 +425,13 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 	}
 
 	private void copyData(boolean firstTime) throws SQLException, DataSetException {
+		copyData(firstTime, null);
+	}
+
+	private void copyData(boolean firstTime, StorageDataSet sdsCache) throws SQLException, DataSetException {
 		try {
 			DiagnosticJLimo.trace(Trace.DataSetFetch, "Before copy result!");
-			copyResult(dataSet, resultSet, columnMap);
+			copyResult(dataSet, resultSet, columnMap, sdsCache);
 		} catch (IOException ioEx) {
 			DataSetException.throwExceptionChain(ioEx);
 		} catch (SQLException sqlEx) {
@@ -400,7 +440,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			// comments.
 			//
 			if (firstTime && loadedRows == 0 && (resultSet = retryQuery()) != null)
-				copyData(false);
+				copyData(false, sdsCache);
 			else
 				DataSetException.throwExceptionChain(sqlEx);
 		}
@@ -430,7 +470,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 		return false;
 	}
 
-	final void copyResult(StorageDataSet dataSet, ResultSet result, int columnMap[])
+	final void copyResult(StorageDataSet dataSet, ResultSet result, int columnMap[], StorageDataSet sdsCache)
 			throws SQLException, IOException, DataSetException {
 		// ! Diagnostic.println("========================= copyResult: "+dataSet.getTableName());
 		if (variants == null) {
@@ -439,9 +479,17 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 				// tod: next two lines added as candidate fix
 				dataSet.startLoading(this, loadStatus, isAsyncLoad, loadRowByRow);
 				dataSet.endLoading();
+				
+				if (sdsCache != null) {
+					sdsCache.startLoading(this, loadStatus, isAsyncLoad, loadRowByRow);
+					sdsCache.endLoading();
+				}
 				return;
 			}
 			loadVariants = dataSet.startLoading(this, loadStatus, isAsyncLoad, loadRowByRow);
+			if (sdsCache != null) {
+				sdsCache.startLoading(this, loadStatus, isAsyncLoad, loadRowByRow);
+			}
 
 			if (coercer != null)
 				variants = coercer.init(loadVariants);
@@ -640,6 +688,10 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 					coercer.coerceToColumn(loadColumns, loadVariants);
 
 				dataSet.loadRow(loadStatus);
+				if (sdsCache != null) {
+					dataSet.getLoadRow().copyTo(sdsCache.getLoadRow());
+					sdsCache.loadRow(RowStatus.LOADED);
+				}
 
 				if (cancel || (maxLoadRows > 0 && ++loadedRows >= maxLoadRows)) {
 					earlyBreak = true;
@@ -654,6 +706,9 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			// ! System.out.println("end gc: ===================================== ");
 			if (cancel || !earlyBreak || descriptor.getLoadOption() == Load.ALL || descriptor.getLoadOption() == Load.ASYNCHRONOUS || !result.next()) {
 				closePrivateResources(true);
+			}
+			if (sdsCache != null) {
+				sdsCache.endLoading();
 			}
 		}
 	}
@@ -714,7 +769,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 					Column[] columns = RuntimeMetaData.processMetaData(database, dataSet.getMetaDataUpdate(), result);
 					columnMap = ProviderHelp.initData(dataSet, columns, true, true);// , false);
 					// ! columnMap = ProviderHelp.createColumnMap(dataSet, columns, null);
-					copyResult(dataSet, result, columnMap);
+					copyResult(dataSet, result, columnMap, null);
 				} catch (SQLException ex) {
 					// ! Diagnostic.check(processSQLError(ex));
 					DataSetException.SQLException(ex);
