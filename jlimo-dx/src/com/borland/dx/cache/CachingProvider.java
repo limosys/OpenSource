@@ -9,6 +9,6 @@ public interface CachingProvider {
 
 	public void clearCache(Provider delegate);
 
-	public void dataLoaded(StorageDataSet sds);
+	public void dataLoaded(Provider delegate, StorageDataSet sds);
 
 }

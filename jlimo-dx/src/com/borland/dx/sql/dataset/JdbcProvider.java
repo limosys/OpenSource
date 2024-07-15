@@ -85,6 +85,8 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 		ifBusy();
 		blockConnectionChanges(true);
 
+		StorageDataSet sdsCache = null;
+
 		try {
 			if (isPropertyChanged())
 				resetState();
@@ -105,8 +107,13 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			if (maxLoadRows == 0)
 				closePrivateResources(true);
 			else {
-				if (!isAsyncLoad)
-					copyData(true);
+				if (!isAsyncLoad) {
+					if (dataLoad == DataLoad.LOAD_AND_CALLBACK) {
+						sdsCache = new StorageDataSet();
+						sdsCache.setColumns(dataSet.cloneColumns());
+					}
+					copyData(true, sdsCache);
+				}
 				else {
 					task = new TaskRunner(this);
 					task.start();
@@ -119,8 +126,8 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			providerFailed(ex);
 		}
 		
-		if (dataLoad == DataLoad.LOAD_AND_CALLBACK) {
-			getCachingProvider().dataLoaded(dataSet);
+		if (sdsCache != null) {
+			getCachingProvider().dataLoaded(this, sdsCache);
 		}
 
 	}
@@ -418,9 +425,13 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 	}
 
 	private void copyData(boolean firstTime) throws SQLException, DataSetException {
+		copyData(firstTime, null);
+	}
+
+	private void copyData(boolean firstTime, StorageDataSet sdsCache) throws SQLException, DataSetException {
 		try {
 			DiagnosticJLimo.trace(Trace.DataSetFetch, "Before copy result!");
-			copyResult(dataSet, resultSet, columnMap);
+			copyResult(dataSet, resultSet, columnMap, sdsCache);
 		} catch (IOException ioEx) {
 			DataSetException.throwExceptionChain(ioEx);
 		} catch (SQLException sqlEx) {
@@ -429,7 +440,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			// comments.
 			//
 			if (firstTime && loadedRows == 0 && (resultSet = retryQuery()) != null)
-				copyData(false);
+				copyData(false, sdsCache);
 			else
 				DataSetException.throwExceptionChain(sqlEx);
 		}
@@ -459,7 +470,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 		return false;
 	}
 
-	final void copyResult(StorageDataSet dataSet, ResultSet result, int columnMap[])
+	final void copyResult(StorageDataSet dataSet, ResultSet result, int columnMap[], StorageDataSet sdsCache)
 			throws SQLException, IOException, DataSetException {
 		// ! Diagnostic.println("========================= copyResult: "+dataSet.getTableName());
 		if (variants == null) {
@@ -468,9 +479,17 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 				// tod: next two lines added as candidate fix
 				dataSet.startLoading(this, loadStatus, isAsyncLoad, loadRowByRow);
 				dataSet.endLoading();
+				
+				if (sdsCache != null) {
+					sdsCache.startLoading(this, loadStatus, isAsyncLoad, loadRowByRow);
+					sdsCache.endLoading();
+				}
 				return;
 			}
 			loadVariants = dataSet.startLoading(this, loadStatus, isAsyncLoad, loadRowByRow);
+			if (sdsCache != null) {
+				sdsCache.startLoading(this, loadStatus, isAsyncLoad, loadRowByRow);
+			}
 
 			if (coercer != null)
 				variants = coercer.init(loadVariants);
@@ -669,6 +688,10 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 					coercer.coerceToColumn(loadColumns, loadVariants);
 
 				dataSet.loadRow(loadStatus);
+				if (sdsCache != null) {
+					dataSet.getLoadRow().copyTo(sdsCache.getLoadRow());
+					sdsCache.loadRow(RowStatus.LOADED);
+				}
 
 				if (cancel || (maxLoadRows > 0 && ++loadedRows >= maxLoadRows)) {
 					earlyBreak = true;
@@ -683,6 +706,9 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 			// ! System.out.println("end gc: ===================================== ");
 			if (cancel || !earlyBreak || descriptor.getLoadOption() == Load.ALL || descriptor.getLoadOption() == Load.ASYNCHRONOUS || !result.next()) {
 				closePrivateResources(true);
+			}
+			if (sdsCache != null) {
+				sdsCache.endLoading();
 			}
 		}
 	}
@@ -743,7 +769,7 @@ public abstract class JdbcProvider extends Provider implements LoadCancel, Task,
 					Column[] columns = RuntimeMetaData.processMetaData(database, dataSet.getMetaDataUpdate(), result);
 					columnMap = ProviderHelp.initData(dataSet, columns, true, true);// , false);
 					// ! columnMap = ProviderHelp.createColumnMap(dataSet, columns, null);
-					copyResult(dataSet, result, columnMap);
+					copyResult(dataSet, result, columnMap, null);
 				} catch (SQLException ex) {
 					// ! Diagnostic.check(processSQLError(ex));
 					DataSetException.SQLException(ex);
