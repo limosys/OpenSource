@@ -96,6 +96,12 @@ public abstract class ResolutionManager
         ex = ex3;
     }
 
+		for (int i = 0; i < dataSets.length; i++) {
+			if (dataSets[i] instanceof ProcedureDataSet) {
+				ProcedureDataSet pds = (ProcedureDataSet) dataSets[i];
+				pds.clearCache();
+			}
+		}
 
     if (ex != null)
       DataSetException.throwException(DataSetException.EXCEPTION_CHAIN, ex);
