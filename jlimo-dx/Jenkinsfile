@@ -1,0 +1,38 @@
+
+pipeline {
+
+	agent any
+
+	options {
+    	buildDiscarder(logRotator(
+        	artifactDaysToKeepStr: '30',
+        	artifactNumToKeepStr: '10',
+        	daysToKeepStr: '30',
+        	numToKeepStr: '5'
+    	))
+	}
+
+	stages {
+		stage('Build') {
+	    	steps {
+	    		script {
+	    		    if (isUnix()) {
+	    	    		withMaven(maven: 'M3', jdk: 'java8',  mavenLocalRepo: '.mvn') {
+        	    			dir("jlimo-dx") {
+	               				sh "mvn clean package"
+            				}
+    					}
+					} else {
+	    	    		withMaven(maven: 'M3', jdk: 'java8',  mavenLocalRepo: '.mvn') {
+        	    			dir("jlimo-dx") {
+	               				bat "mvn clean package"
+            				}
+    					}
+					}
+	    		}
+			}
+		}
+	}
+ 
+  
+}
