@@ -1,36 +1,43 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.limosys.javalibs</groupId>
-  <artifactId>jlimo-dx</artifactId>
-  <version>2.6.8</version>
-  <description>replacement of JBuilder2006 dx.jar with added functionality</description>
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.limosys.javalibs</groupId>
+	<artifactId>jlimo-dx</artifactId>
+	<version>2.6.8</version>
+	<description>replacement of JBuilder2006 dx.jar with added functionality</description>
+
 	<repositories>
 		<repository>
 			<id>limosys-repo</id>
 			<url>http://colodev1.lsvpn.net</url>
 		</repository>
 	</repositories>
-  
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <!-- <release>14</release> -->
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
-  	<dependency>
-  		<groupId>com.limosys.javalibs</groupId>
-  		<artifactId>beandt</artifactId>
-  		<version>1.0</version>
-  	</dependency>
-  </dependencies>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>${basedir}/src</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<!-- <release>14</release> -->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>com.limosys.javalibs</groupId>
+			<artifactId>beandt</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
 </project>
