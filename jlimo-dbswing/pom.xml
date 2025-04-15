@@ -42,7 +42,7 @@
 		<!-- use Ctrl-Alt-P in Eclipse to select active profile -->
 		<!-- The configuration build with different Java version profile -->
 		<profile>
-			<id>jdk16</id>
+			<id>jdk17</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -59,7 +59,7 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.8.1</version>
 						<configuration>
-							<release>16</release>
+							<release>17</release>
 						</configuration>
 					</plugin>
 				</plugins>
